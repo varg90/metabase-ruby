@@ -30,10 +30,12 @@ module Metabase
 
     def request(method, path, params)
       headers = params.delete(:headers)
+      body =  params.delete(:body)
 
       response = connection.public_send(method, path, params) do |request|
         request.headers['X-Metabase-Session'] = @token if @token
         headers&.each_pair { |k, v| request.headers[k] = v }
+        request.body = body if body
       end
 
       error = Error.from_response(response)
